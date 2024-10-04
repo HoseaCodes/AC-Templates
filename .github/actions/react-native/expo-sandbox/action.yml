@@ -1,0 +1,26 @@
+name: 'Sandbox Pipeline'
+description: 'A reusable pipeline for sandbox projects'
+inputs:
+  slack_channel:
+    description: 'Slack channel for notifications'
+    required: true
+  slack_webhook:
+    description: 'Slack webhook URL'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 🏗 Setup repo
+      run: echo "Running linter"
+    - name: 🏗 Setup repo for unit tests
+      run: echo "Running unit tests"
+    - name: Generate QR Code
+      run: |
+        echo "Generating QR code..."
+        # Add your logic here to generate a QR code and set outputs
+        echo "::set-output name=qr_code_url::https://example.com/qrcode"
+    - name: Notify Slack
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text": "Pipeline completed! QR Code URL: ${{ steps.generate-qr-code.outputs.qr_code_url }}"}' \
+        ${{ inputs.slack_webhook }}
