@@ -22,7 +22,6 @@ on:
 jobs:
   generate-qr-code:
     runs-on: ubuntu-latest
-    needs: unittests
 
     outputs:
       slack_message: ${{ steps.prepare-message.outputs.message }}
@@ -159,7 +158,7 @@ jobs:
             echo "• Deep Link: https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561"
             echo 'EOF'
           } >> $GITHUB_ENV
-          
+
       - name: Upload Project Update
         uses: actions/upload-artifact@v3
         with:
@@ -174,8 +173,6 @@ jobs:
           hide_classify: "OUTDATED"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.PR.outputs.number || github.event.number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           header: 'Expo Feature Branch Preview'
           message: ${{ steps.prepare-message.outputs.message }}
           body: 'QR Code URL: [QR Code](${ { steps.generate-qr-code.outputs.qr_code_url } })'
-          
