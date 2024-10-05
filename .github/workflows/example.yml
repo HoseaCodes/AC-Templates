@@ -1,18 +1,8 @@
 name: Create and Publish Docker Image
 
 on:
-  workflow_call:
-    inputs:
-      image_name:
-        required: true
-        type: string
-      tag: 
-        type: string
-    secrets:
-      registry_username:
-        required: true
-      registry_password:
-        required: true
+  push:
+  pull_request:
 
 jobs:
   build:
@@ -32,11 +22,11 @@ jobs:
 
       - name: Set the tag
         run: |
-          if [ -z "${{inputs.tag}}" ]
+          if [ -z "${{github.ref_name}}" ]
           then
             echo "final_tag=latest" >> $GITHUB_ENV
           else
-            echo "final_tag=${{inputs.tag}}" >> $GITHUB_ENV
+            echo "final_tag=${{github.ref_name}}" >> $GITHUB_ENV
           fi
 
       - name: Build and Push the Image
@@ -44,11 +34,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{secrets.registry_username}}/${{inputs.image_name}}:${{env.final_tag}}
-
-
-  do-something-else:
-    runs-on: ubuntu-latest
-
-    steps:
-    - run: echo "Hello"
+          tags: ${{secrets.registry_username}}/${{github.event.repository.name}}:${{env.final_tag}}
