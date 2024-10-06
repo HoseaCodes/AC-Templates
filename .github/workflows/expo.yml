@@ -44,7 +44,7 @@ jobs:
         run: npm install -g eas-cli
 
       - name: Log in to Expo
-        run: npx expo login --username ${{ github.event.inputs.expo_username }} --password ${{ github.event.inputs.expo_password }}
+        run: npx expo login --username ${{ secrets.expo_username }} --password ${{ secrets.expo_password }}
 
       - name: Get Pull Request Number
         uses: 8BitJonny/gh-get-current-pr@3.0.0
