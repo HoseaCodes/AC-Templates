@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      slack_message: ${{ steps.prepare-message.outputs.message }}
+      slack_message: ${{ env.message }}
       bulletpoint_message: ${{ steps.bullet-message.outputs.bullet_message }}
 
     steps:
@@ -185,5 +185,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.PR.outputs.number || github.event.number }}
           header: 'Expo Feature Branch Preview'
-          message: ${{ steps.prepare-message.outputs.message || env.slack_message || env.bulletpoint_message }}
+          message: ${{ env.message }}
 
