@@ -21,8 +21,8 @@ on:
         required: true
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: none
 
 jobs:
   generate-qr-code:
