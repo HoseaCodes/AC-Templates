@@ -20,6 +20,9 @@ on:
       expo_username:
         required: true
 
+permissions:
+  pull-requests: write
+
 jobs:
   generate-qr-code:
     runs-on: ubuntu-latest
