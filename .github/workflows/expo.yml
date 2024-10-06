@@ -35,6 +35,7 @@ jobs:
         run: |
           echo "Project ID: ${{ github.event.inputs.project_id }}"
           echo "Expo Slug: ${{ github.event.inputs.expo_slug }}"
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -102,13 +103,13 @@ jobs:
       - name: Generate preview link
         id: generate-preview-link
         run: |
-          PROJECT_ID="${{ inputs.project_id }}"
-          SLUG="${{ inputs.expo_slug }}"
+          PROJECT_ID="${{ github.event.inputs.project_id }}"
+          SLUG="${{ github.event.inputs.expo_slug }}"
           UPDATE_RUNTIME_VERSION="1.0.0"
           GROUP_ID="${{ env.group_id }}"
           MESSAGE="${{ steps.get-pr-title.outputs.message }}"
           CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
-          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
+          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${{ github.event.inputs.expo_slug }}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
           echo "::set-output name=preview_link::$PREVIEW_LINK"
 
       - name: Generate Manifest URL
@@ -121,14 +122,10 @@ jobs:
       - name: Generate Deep Link URL
         id: generate-deep-link
         run: |
-          PROJECT_ID="${{ inputs.project_id }}"
-          EXPO_SLUG="${{ inputs.expo_slug }}"
-          UPDATE_RUNTIME_VERSION="1.0.0"
-          GROUP_ID="${{ env.group_id }}"
-          MESSAGE="${{ steps.get-pr-title.outputs.message }}"
-          CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
-          DEEP_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${EXPO_SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
-          echo "deep_link=${DEEP_LINK}" >> $GITHUB_ENV
+          EXPO_SLUG="${{ github.event.inputs.expo_slug }}"
+          MANIFEST_URL="${{ steps.generate-manifest-url.outputs.manifest_url }}"
+          PREVIEW_LINK="${{ steps.generate-preview-link.outputs.preview_link }}"  
+          DEEP_LINK=$PREVIEW_LINK
           echo "::set-output name=deep_link::$DEEP_LINK"
 
       - name: Generate QR Code
@@ -154,16 +151,14 @@ jobs:
       - name: Prepare Message
         id: prepare-message
         run: |
-          PROJECT_ID="${{ inputs.project_id }}"
-          EXPO_SLUG="${{ inputs.expo_slug }}"
           {
             echo 'message<<EOF'
             echo "**The latest updates on your projects**. Learn more about [Expo ↗︎](https://expo.dev/)"
             echo
             echo "| Name | Status | Preview | Comments | Updated (UTC) |"
             echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
-            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/${PROJECT_ID}?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | $(date -u +"%Y-%m-%d %H:%M:%S") |"
-            echo "| **Deep Link** | 🔗 [Open Deep Link](${{ env.deep_link }}) | ![QR Code](${{ steps.generate-qr-code.outputs.qr_code_url }}) |"
+            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
+            echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=slug=${{ github.event.inputs.expo_slug }}&projectId=${PROJECT_ID}&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03) |"
             echo
             echo 'EOF'
           } >> $GITHUB_ENV
@@ -171,16 +166,14 @@ jobs:
       - name: Generate Project Update
         id: bullet-message
         run: |
-          PROJECT_ID="${{ inputs.project_id }}"
-          EXPO_SLUG="${{ inputs.expo_slug }}"
           {
             echo 'bullet_message<<EOF'
             echo
             echo "The latest updates on your projects. Learn more about [Expo ↗︎](https://expo.dev/)"
             echo
-            echo "• Manifest URL: https://u.expo.dev/${PROJECT_ID}?channel-name="
+            echo "• Manifest URL: https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name="
             echo
-            echo "• Deep Link: ${{ env.deep_link }}"
+            echo "• Deep Link: https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561"
             echo 'EOF'
           } >> $GITHUB_ENV
 
