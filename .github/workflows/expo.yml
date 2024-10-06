@@ -155,7 +155,7 @@ jobs:
             echo
             echo 'EOF'
           } >> $GITHUB_ENV
-          
+
       - name: Generate Project Update
         id: bullet-message
         run: |
@@ -186,5 +186,4 @@ jobs:
           number: ${{ steps.PR.outputs.number || github.event.number }}
           header: 'Expo Feature Branch Preview'
           message: ${{ steps.prepare-message.outputs.message }}
-          body: 'QR Code URL: [QR Code](${ { steps.generate-qr-code.outputs.qr_code_url } })'
 
