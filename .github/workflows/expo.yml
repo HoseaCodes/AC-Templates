@@ -109,7 +109,7 @@ jobs:
           GROUP_ID="${{ env.group_id }}"
           MESSAGE="${{ steps.get-pr-title.outputs.message }}"
           CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
-          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${{ inputs.expo_slug }}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
+          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
           echo "::set-output name=preview_link::$PREVIEW_LINK"
 
       - name: Generate Manifest URL
@@ -158,7 +158,7 @@ jobs:
             echo "| Name | Status | Preview | Comments | Updated (UTC) |"
             echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
             echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
-            echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=slug=${{ inputs.expo_slug }}&projectId=${PROJECT_ID}&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03) |"
+            echo "| **Deep Link** | 🔗 [Open Deep Link](${PREVIEW_LINK}) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=${PREVIEW_LINK}) |"
             echo
             echo 'EOF'
           } >> $GITHUB_ENV
@@ -173,7 +173,7 @@ jobs:
             echo
             echo "• Manifest URL: https://u.expo.dev/${{ inputs.project_id }}?channel-name="
             echo
-            echo "• Deep Link: https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ inputs.expo_slug }}&projectId=${{ inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561"
+            echo "• Deep Link: ${PREVIEW_LINK}"
             echo 'EOF'
           } >> $GITHUB_ENV
 
