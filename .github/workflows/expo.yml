@@ -58,6 +58,7 @@ jobs:
 
       - name: Set EAS Channel
         run: |
+          echo "Requires app.json and eas.json to be present in the root of the project."
           CHANNEL_NAME="feature/${{ steps.PR.outputs.number || github.event.number }}"
           if eas channel:list | grep -q "$CHANNEL_NAME"; then
             echo "Channel '$CHANNEL_NAME' already exists."
