@@ -150,9 +150,12 @@ jobs:
             echo
             echo "| Name | Status | Preview | Comments | Updated (UTC) |"
             echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
-            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
-            echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03
-
+            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
+            echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=&projectId=&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03) |"
+            echo
+            echo 'EOF'
+          } >> $GITHUB_ENV
+          
       - name: Generate Project Update
         id: bullet-message
         run: |
