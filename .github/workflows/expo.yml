@@ -134,6 +134,7 @@ jobs:
           DEEP_LINK="${{ steps.generate-deep-link.outputs.deep_link }}"
           ENCODED_DEEP_LINK=$(echo -n "$DEEP_LINK" | jq -sRr @uri)
           QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=${ENCODED_DEEP_LINK}&qzone=1&margin=0&size=500x500&ecc=L"
+          echo "QR Code URL: $QR_CODE_URL"
           echo "::set-output name=qr_code_url::$QR_CODE_URL"
 
       - name: Upload QR Code Artifact
@@ -157,8 +158,8 @@ jobs:
             echo
             echo "| Name | Status | Preview | Comments | Updated (UTC) |"
             echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
-            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
-            echo "| **Deep Link** | 🔗 [Open Deep Link](${PREVIEW_LINK}) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=${PREVIEW_LINK}) |"
+            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/${{ inputs.project_id }}?channel-name=${{ env.CHANNEL_NAME }}) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
+            echo "| **Deep Link** | 🔗 [Open Deep Link](${PREVIEW_LINK}) | ![QR Code](${QR_CODE_URL}) |"
             echo
             echo 'EOF'
           } >> $GITHUB_ENV
