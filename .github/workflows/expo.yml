@@ -6,14 +6,6 @@ on:
       - main
   workflow_call:
     inputs:
-      expo_username:
-        description: 'Expo Username'
-        required: true
-        type: string
-      expo_password:
-        description: 'Expo Password'
-        required: true
-        type: string
       project_id:
         description: 'EAS Project ID'
         required: true
@@ -22,6 +14,11 @@ on:
         description: 'Expo Slug (App Identifier)'
         required: true
         type: string
+    secrets:
+      expo_password:
+        required: true
+      expo_username:
+        required: true
 
 jobs:
   generate-qr-code:
