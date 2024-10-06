@@ -40,10 +40,11 @@ jobs:
       - name: Install Expo CLI
         run: npm install -g expo-cli
 
+      - name: Install Expo 
+        run: npm install expo
+        
       - name: Install Expo Router
-        run: |
-          npx expo install expo-router
-          npm install expo-router 
+        run: npx expo install expo-router
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
