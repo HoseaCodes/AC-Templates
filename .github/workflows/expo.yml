@@ -185,5 +185,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.PR.outputs.number || github.event.number }}
           header: 'Expo Feature Branch Preview'
-          message: ${{ steps.prepare-message.outputs.message }}
+          message: ${{ steps.prepare-message.outputs.message || env.slack_message || env.bulletpoint_message }}
 
