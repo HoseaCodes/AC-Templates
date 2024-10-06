@@ -102,13 +102,13 @@ jobs:
       - name: Generate preview link
         id: generate-preview-link
         run: |
-          PROJECT_ID="${{ github.event.inputs.project_id }}"
-          SLUG="${{ github.event.inputs.expo_slug }}"
+          PROJECT_ID="${{ inputs.project_id }}"
+          SLUG="${{ inputs.expo_slug }}"
           UPDATE_RUNTIME_VERSION="1.0.0"
           GROUP_ID="${{ env.group_id }}"
           MESSAGE="${{ steps.get-pr-title.outputs.message }}"
           CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
-          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${{ github.event.inputs.expo_slug }}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
+          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
           echo "::set-output name=preview_link::$PREVIEW_LINK"
 
       - name: Generate Manifest URL
