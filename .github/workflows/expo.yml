@@ -49,130 +49,131 @@ jobs:
         uses: 8BitJonny/gh-get-current-pr@3.0.0
         id: PR
 
-      - name: Set EAS Channel
-        run: |
-          CHANNEL_NAME="feature/${{ steps.PR.outputs.number || github.event.number }}"
-          if eas channel:list | grep -q "$CHANNEL_NAME"; then
-            echo "Channel '$CHANNEL_NAME' already exists."
-          else
-            echo "Channel '$CHANNEL_NAME' does not exist. Creating it..."
-            eas channel:create "feature/${{ steps.PR.outputs.number || github.event.number }}"
-          fi
+      # - name: Set EAS Channel
+      #   run: |
+      #     CHANNEL_NAME="feature/${{ steps.PR.outputs.number || github.event.number }}"
+      #     if eas channel:list | grep -q "$CHANNEL_NAME"; then
+      #       echo "Channel '$CHANNEL_NAME' already exists."
+      #     else
+      #       echo "Channel '$CHANNEL_NAME' does not exist. Creating it..."
+      #       eas channel:create "feature/${{ steps.PR.outputs.number || github.event.number }}"
+      #     fi
 
-      - name: Run EAS Update
-        run: |
-          eas update --auto --branch "feature/${{ steps.PR.outputs.number || github.event.number }}"
+      # - name: Run EAS Update
+      #   run: |
+      #     eas update --auto --branch "feature/${{ steps.PR.outputs.number || github.event.number }}"
 
-      - name: Capture timestamp
-        id: timestamp
-        run: echo "::set-output name=created_at::$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')"
+      # - name: Capture timestamp
+      #   id: timestamp
+      #   run: echo "::set-output name=created_at::$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')"
 
-      - name: Get PR title or commit message
-        id: get-pr-title
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            MESSAGE="${{ github.event.pull_request.title }}"
-          else
-            MESSAGE="${{ github.event.head_commit.message }}"
-          fi
-          ENCODED_MESSAGE=$(echo "$MESSAGE" | jq -sRr @uri)
-          echo "::set-output name=message::$ENCODED_MESSAGE"
+      # - name: Get PR title or commit message
+      #   id: get-pr-title
+      #   run: |
+      #     if [ "${{ github.event_name }}" == "pull_request" ]; then
+      #       MESSAGE="${{ github.event.pull_request.title }}"
+      #     else
+      #       MESSAGE="${{ github.event.head_commit.message }}"
+      #     fi
+      #     ENCODED_MESSAGE=$(echo "$MESSAGE" | jq -sRr @uri)
+      #     echo "::set-output name=message::$ENCODED_MESSAGE"
 
-      - name: Get updates and extract group ID
-        id: extract_group_id
-        run: |
-          json_output=$(npx eas update:list --branch "feature/${{ steps.PR.outputs.number || github.event.number }}" --json --non-interactive)
-          group_id=$(echo "$json_output" | jq -r '.currentPage[0].group')
-          echo "group_id=${group_id}" >> $GITHUB_ENV
+      # - name: Get updates and extract group ID
+      #   id: extract_group_id
+      #   run: |
+      #     json_output=$(npx eas update:list --branch "feature/${{ steps.PR.outputs.number || github.event.number }}" --json --non-interactive)
+      #     group_id=$(echo "$json_output" | jq -r '.currentPage[0].group')
+      #     echo "group_id=${group_id}" >> $GITHUB_ENV
 
-      - name: Generate preview link
-        id: generate-preview-link
-        run: |
-          PROJECT_ID="${{ github.event.inputs.project_id }}"
-          SLUG="${{ github.event.inputs.expo_slug }}"
-          UPDATE_RUNTIME_VERSION="1.0.0"
-          GROUP_ID="${{ env.group_id }}"
-          MESSAGE="${{ steps.get-pr-title.outputs.message }}"
-          CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
-          PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
-          echo "::set-output name=preview_link::$PREVIEW_LINK"
+      # - name: Generate preview link
+      #   id: generate-preview-link
+      #   run: |
+      #     PROJECT_ID="${{ github.event.inputs.project_id }}"
+      #     SLUG="${{ github.event.inputs.expo_slug }}"
+      #     UPDATE_RUNTIME_VERSION="1.0.0"
+      #     GROUP_ID="${{ env.group_id }}"
+      #     MESSAGE="${{ steps.get-pr-title.outputs.message }}"
+      #     CREATED_AT="${{ steps.timestamp.outputs.created_at }}"
+      #     PREVIEW_LINK="https://expo.dev/preview/update?message=${MESSAGE}&updateRuntimeVersion=${UPDATE_RUNTIME_VERSION}&createdAt=${CREATED_AT}&slug=${SLUG}&projectId=${PROJECT_ID}&group=${GROUP_ID}"
+      #     echo "::set-output name=preview_link::$PREVIEW_LINK"
 
-      - name: Generate Manifest URL
-        id: generate-manifest-url
-        run: |
-          EAS_PROJECT_ID="${{ github.event.inputs.project_id }}"
-          MANIFEST_URL="https://u.expo.dev/${EAS_PROJECT_ID}?channel-name=${CHANNEL_NAME}"
-          echo "::set-output name=manifest_url::$MANIFEST_URL"
+      # - name: Generate Manifest URL
+      #   id: generate-manifest-url
+      #   run: |
+      #     EAS_PROJECT_ID="${{ github.event.inputs.project_id }}"
+      #     MANIFEST_URL="https://u.expo.dev/${EAS_PROJECT_ID}?channel-name=${CHANNEL_NAME}"
+      #     echo "::set-output name=manifest_url::$MANIFEST_URL"
 
-      - name: Generate Deep Link URL
-        id: generate-deep-link
-        run: |
-          EXPO_SLUG="${{ github.event.inputs.expo_slug }}"
-          MANIFEST_URL="${{ steps.generate-manifest-url.outputs.manifest_url }}"
-          PREVIEW_LINK="${{ steps.generate-preview-link.outputs.preview_link }}"  
-          DEEP_LINK=$PREVIEW_LINK
-          echo "::set-output name=deep_link::$DEEP_LINK"
+      # - name: Generate Deep Link URL
+      #   id: generate-deep-link
+      #   run: |
+      #     EXPO_SLUG="${{ github.event.inputs.expo_slug }}"
+      #     MANIFEST_URL="${{ steps.generate-manifest-url.outputs.manifest_url }}"
+      #     PREVIEW_LINK="${{ steps.generate-preview-link.outputs.preview_link }}"  
+      #     DEEP_LINK=$PREVIEW_LINK
+      #     echo "::set-output name=deep_link::$DEEP_LINK"
 
-      - name: Generate QR Code
-        id: generate-qr-code
-        run: |
-          DEEP_LINK="${{ steps.generate-deep-link.outputs.deep_link }}"
-          ENCODED_DEEP_LINK=$(echo -n "$DEEP_LINK" | jq -sRr @uri)
-          QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=${ENCODED_DEEP_LINK}&qzone=1&margin=0&size=500x500&ecc=L"
-          echo "::set-output name=qr_code_url::$QR_CODE_URL"
+      # - name: Generate QR Code
+      #   id: generate-qr-code
+      #   run: |
+      #     DEEP_LINK="${{ steps.generate-deep-link.outputs.deep_link }}"
+      #     ENCODED_DEEP_LINK=$(echo -n "$DEEP_LINK" | jq -sRr @uri)
+      #     QR_CODE_URL="https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=${ENCODED_DEEP_LINK}&qzone=1&margin=0&size=500x500&ecc=L"
+      #     echo "::set-output name=qr_code_url::$QR_CODE_URL"
 
-      - name: Upload QR Code Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: qr-code
-          path: ${{ steps.generate-qr-code.outputs.qr_code_url }}
+      # - name: Upload QR Code Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: qr-code
+      #     path: ${{ steps.generate-qr-code.outputs.qr_code_url }}
 
-      - name: Get current date
-        id: get-current-date
-        run: |
-          CURRENT_DATE=$(date -u +"%Y-%m-%d %H:%M:%S")
-          echo "::set-output name=current_date::$CURRENT_DATE"
+      # - name: Get current date
+      #   id: get-current-date
+      #   run: |
+      #     CURRENT_DATE=$(date -u +"%Y-%m-%d %H:%M:%S")
+      #     echo "::set-output name=current_date::$CURRENT_DATE"
 
-      - name: Prepare Message
-        id: prepare-message
-        run: |
-          {
-            echo 'message<<EOF'
-            echo "**The latest updates on your projects**. Learn more about [Expo ↗︎](https://expo.dev/)"
-            echo
-            echo "| Name | Status | Preview | Comments | Updated (UTC) |"
-            echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
-            echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
-            echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03
+      # - name: Prepare Message
+      #   id: prepare-message
+      #   run: |
+      #     {
+      #       echo 'message<<EOF'
+      #       echo "**The latest updates on your projects**. Learn more about [Expo ↗︎](https://expo.dev/)"
+      #       echo
+      #       echo "| Name | Status | Preview | Comments | Updated (UTC) |"
+      #       echo "| :-------------- | :--------------------------------------------------| :----------------------------------------- | :--------------------- | :-------------------------------- |"
+      #       echo "| **Manifest URL** | 🔗 [View Manifest](https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name=) | ✅ Ready [Inspect]() | 💬 [**Add feedback**]() | 2024-10-03 09:20:10 |"
+      #       echo "| **Deep Link** | 🔗 [Open Deep Link](https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561) | ![QR Code](https://api.qrserver.com/v1/create-qr-code/?color=000000&bgcolor=FFFFFF&data=https%3A%2F%2Fexpo.dev%2Fpreview%2Fupdate%3Fmessage%3D%26updateRuntimeVersion%3D1.0.0%26createdAt%3D2024-10-03
 
-      - name: Generate Project Update
-        id: bullet-message
-        run: |
-          {
-            echo 'bullet_message<<EOF'
-            echo
-            echo "The latest updates on your projects. Learn more about [Expo ↗︎](https://expo.dev/)"
-            echo
-            echo "• Manifest URL: https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name="
-            echo
-            echo "• Deep Link: https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561"
-            echo 'EOF'
-          } >> $GITHUB_ENV
+      # - name: Generate Project Update
+      #   id: bullet-message
+      #   run: |
+      #     {
+      #       echo 'bullet_message<<EOF'
+      #       echo
+      #       echo "The latest updates on your projects. Learn more about [Expo ↗︎](https://expo.dev/)"
+      #       echo
+      #       echo "• Manifest URL: https://u.expo.dev/${{ github.event.inputs.project_id }}?channel-name="
+      #       echo
+      #       echo "• Deep Link: https://expo.dev/preview/update?message=&updateRuntimeVersion=1.0.0&createdAt=2024-10-03T09:20:08.650Z&slug=${{ github.event.inputs.expo_slug }}&projectId=${{ github.event.inputs.project_id }}&group=61ccc202-29ec-4114-a408-b9a715255561"
+      #       echo 'EOF'
+      #     } >> $GITHUB_ENV
 
-      - name: Upload Project Update
-        uses: actions/upload-artifact@v3
-        with:
-          name: project-update
-          path: project_update.txt
+      # - name: Upload Project Update
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: project-update
+      #     path: project_update.txt
 
-      # Post QR Code URL as a comment on the pull request (Optional)
-      - name: Post QR Code as PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          hide_and_recreate: true
-          hide_classify: "OUTDATED"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ steps.PR.outputs.number || github.event.number }}
-          header: 'Expo Feature Branch Preview'
-          message: ${{ steps.prepare-message.outputs.message }}
-          body: 'QR Code URL: [QR Code](${ { steps.generate-qr-code.outputs.qr_code_url } })'
+      # # Post QR Code URL as a comment on the pull request (Optional)
+      # - name: Post QR Code as PR comment
+      #   uses: marocchino/sticky-pull-request-comment@v2
+      #   with:
+      #     hide_and_recreate: true
+      #     hide_classify: "OUTDATED"
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     number: ${{ steps.PR.outputs.number || github.event.number }}
+      #     header: 'Expo Feature Branch Preview'
+      #     message: ${{ steps.prepare-message.outputs.message }}
+      #     body: 'QR Code URL: [QR Code](${ { steps.generate-qr-code.outputs.qr_code_url } })'
+
