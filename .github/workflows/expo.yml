@@ -4,20 +4,24 @@ on:
   pull_request:
     branches-ignore:
       - main
-  workflow_dispatch:
+  workflow_call:
     inputs:
       expo_username:
         description: 'Expo Username'
         required: true
+        type: string
       expo_password:
         description: 'Expo Password'
         required: true
+        type: string
       project_id:
         description: 'EAS Project ID'
         required: true
+        type: string
       expo_slug:
         description: 'Expo Slug (App Identifier)'
         required: true
+        type: string
 
 jobs:
   generate-qr-code:
